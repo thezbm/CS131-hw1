@@ -350,10 +350,10 @@ let quadrupled_z_again : int = twice double z (* pass double to twice *)
    makes the first case of part1_tests "Problem 1" succeed. See the
    gradedtests.ml file.
 *)
-let pieces : int = -1
+let pieces : int = 8
 
 (* Implement a function cube that takes an int value and produces its cube. *)
-let cube : int -> int = fun _ -> failwith "cube unimplemented"
+let cube : int -> int = fun x -> x * x * x
 
 (* Problem 1-2 *)
 (*
@@ -365,8 +365,7 @@ let cube : int -> int = fun _ -> failwith "cube unimplemented"
    (all numbers non-negative)
    and computes the total value of the coins in cents:
 *)
-let cents_of : int -> int -> int -> int -> int =
-   fun _ -> failwith "cents_of unimplemented"
+let cents_of q d n p = 25 * q + 10 * d + 5 * n + 1 * p
 
 (* Problem 1-3 *)
 (*
@@ -508,7 +507,7 @@ let pair_up (x : 'a) : 'a * 'a = (x, x)
    Complete the definition of third_of_three; be sure to give it
    the correct type signature (we will grade that part manually):
 *)
-let third_of_three _ = failwith "third_of_three unimplemented"
+let third_of_three ((_, _, z) : 'a * 'b * 'c) : 'c = z
 
 (*
   Problem 2-2
@@ -520,7 +519,7 @@ let third_of_three _ = failwith "third_of_three unimplemented"
 *)
 
 let compose_pair (p : ('b -> 'c) * ('a -> 'b)) : 'a -> 'c =
-  failwith "compose_pair unimplemented"
+  fun x -> x |> snd p |> fst p
 
 (******************************************************************************)
 (*                                                                            *)
@@ -673,7 +672,9 @@ let rec mylist_to_list (l : 'a mylist) : 'a list =
   the inverse of the mylist_to_list function given above.
 *)
 let rec list_to_mylist (l : 'a list) : 'a mylist =
-  failwith "list_to_mylist unimplemented"
+  match l with
+  | [] -> Nil
+  | hd :: tl -> Cons (hd, list_to_mylist tl)
 
 (*
   Problem 3-2
@@ -689,7 +690,9 @@ let rec list_to_mylist (l : 'a list) : 'a mylist =
   append.  So (List.append [1;2] [3]) is the same as  ([1;2] @ [3]).
 *)
 let rec append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  failwith "append unimplemented"
+  match l1 with
+  | [] -> l2
+  | hd :: tl -> hd :: append tl l2
 
 (*
   Problem 3-3
@@ -698,7 +701,9 @@ let rec append (l1 : 'a list) (l2 : 'a list) : 'a list =
   you might want to call append.  Do not use the library function.
 *)
 let rec rev (l : 'a list) : 'a list =
-  failwith "rev unimplemented"
+  match l with
+  | [] -> []
+  | hd :: tl -> append (rev tl) [hd]
 
 (*
   Problem 3-4
@@ -710,7 +715,11 @@ let rec rev (l : 'a list) : 'a list =
   OCaml will compile a tail recursive function to a simple loop.
 *)
 let rev_t (l : 'a list) : 'a list =
-  failwith "rev_t unimplemented"
+  let rec rev_aux acc = function
+  | [] -> acc
+  | hd :: tl -> rev_aux (hd :: acc) tl in begin
+    rev_aux [] l
+  end
 
 (*
   Problem 3-5
@@ -726,7 +735,9 @@ let rev_t (l : 'a list) : 'a list =
   evaluates to true or false.
 *)
 let rec insert (x : 'a) (l : 'a list) : 'a list =
-  failwith "insert unimplemented"
+  match l with
+  | [] -> [x]
+  | hd :: tl -> if x == hd then l else if x > hd then hd :: (insert x tl) else x :: l
 
 (*
   Problem 3-6
@@ -736,8 +747,10 @@ let rec insert (x : 'a) (l : 'a list) : 'a list =
   Hint: you might want to use the insert function that you just defined.
 *)
 let rec union (l1 : 'a list) (l2 : 'a list) : 'a list =
-   failwith "union unimplemented"
-
+  match l1 with
+  | [] -> l2 
+  | hd :: tl -> union tl (insert hd l2)
+ 
 (******************************************************************************)
 (*                                                                            *)
 (* PART 3: Expression Trees and Interpreters                                  *)
@@ -821,8 +834,12 @@ let e3 : exp = Mult (Var "y", Mult (e2, Neg e2)) (* "y * ((x+1) * -(x+1))" *)
   Hint: you need to pattern match on the exp e.
   Hint: you probably want to use the 'union' function you wrote for Problem 3-5.
 *)
-let rec vars_of (e : exp) : string list =
-  failwith "vars_of unimplemented"
+
+let rec vars_of = function
+| Const i -> []
+| Var s -> [s]
+| Neg e -> vars_of e
+| Add (e1, e2) | Mult (e1, e2) -> union (vars_of e1) (vars_of e2)
 
 (*
   How should we _interpret_ (i.e. give meaning to) an expression?
@@ -884,7 +901,10 @@ let ctxt2 : ctxt = [ ("x", 2L); ("y", 7L) ] (* maps "x" to 2L, "y" to 7L *)
   such value, it should raise the Not_found exception.
 *)
 let rec lookup (x : string) (c : ctxt) : int64 =
-  failwith "unimplemented"
+  match c with
+  | [] -> raise Not_found
+  | (s, i) :: tl when s = x -> i
+  | _ :: tl -> lookup x tl
 
 (*
    Problem 4-3
@@ -908,9 +928,13 @@ let rec lookup (x : string) (c : ctxt) : int64 =
    You should test your interpeter on more examples than just those provided in
    gradedtests.ml.
 *)
-
-let rec interpret (c : ctxt) (e : exp) : int64 =
-  failwith "unimplemented"
+let rec interpret (c : ctxt) (e : exp) : int64 = 
+  match e with
+  | Const i -> i
+  | Var s -> lookup s c
+  | Neg e -> Int64.neg (interpret c e)
+  | Add (e1, e2) -> Int64.add (interpret c e1) (interpret c e2)
+  | Mult (e1, e2) -> Int64.mul (interpret c e1) (interpret c e2)
 
 (*
   Problem 4-4
@@ -954,8 +978,22 @@ let rec interpret (c : ctxt) (e : exp) : int64 =
   Hint: what simple optimizations can you do with Neg?
 *)
 
-let rec optimize (e : exp) : exp =
-  failwith "optimize unimplemented"
+let optimize e =
+  let rec optimize_aux ?r:(r=true) e : exp =
+    match e with
+    | Neg (Const i) -> Const (Int64.neg i)
+    | Neg (Neg e) -> e |> optimize_aux
+    | Neg (e) when r -> Neg (optimize_aux e) |> optimize_aux ~r:false
+    | Add (Const i1, Const i2) -> Const (Int64.add i1 i2)
+    | Add (e, Const 0L) | Add (Const 0L, e) -> e |> optimize_aux
+    | Add (e1, e2) when r -> Add (optimize_aux e1, optimize_aux e2) |> optimize_aux ~r:false
+    | Mult (Const i1, Const i2) -> Const (Int64.mul i1 i2)
+    | Mult (_, Const 0L) | Mult (Const 0L, _) -> Const 0L
+    | Mult (e, Const 1L) | Mult (Const 1L, e) -> e |> optimize_aux
+    | Mult (e1, e2) when r -> Mult (optimize_aux e1, optimize_aux e2) |> optimize_aux ~r:false
+    | _ -> e
+  in
+  optimize_aux e
 
 (******************************************************************************)
 (*                                                                            *)
@@ -1093,7 +1131,13 @@ let ans1 = run [] p1
    - You should test the correctness of your compiler on several examples.
 *)
 let rec compile (e : exp) : program =
-  failwith "compile unimplemented"
+  match e with
+  | Const i -> [IPushC i]
+  | Var s -> [IPushV s]
+  | Add (e1, e2) -> (compile e2) @ (compile e1) @ [IAdd]
+  | Mult (e1, e2) -> (compile e2) @ (compile e1) @ [IMul]
+  | Neg e -> (compile e) @ [INeg]
+
 
 (************)
 (* Epilogue *)
