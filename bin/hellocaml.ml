@@ -84,7 +84,7 @@
    Instead, you 'name' computations using the keyword 'let':
 *)
 
-let an_int : int =  8
+let an_int : int = 8
 let another_int : int = 3 * 14
 
 (*
@@ -99,7 +99,7 @@ let another_int : int = 3 * 14
 (* Uncomment to get a type error: *)
 (*
    let an_error : int = 3 + 1.0
-*) 
+*)
 
 (*
   'let' expressions can be nested.  The scope of a let-bound variable is 
@@ -112,9 +112,8 @@ let z : int =
   let x = 3 in
   (* x is in scope here *)
   let y = x + x in
-  (* x and y are both in scope here *)  
+  (* x and y are both in scope here *)
   (y * y) + x
-
 
 (*
    Scoping is sometimes easier to see by writing (optional) 'begin'-'end'
@@ -122,11 +121,9 @@ let z : int =
 *)
 (* bind z to the value 39 *)
 let z : int =
-  let x = 3 in begin
-    let y = x + x in begin
-      (y * y) + x
-    end
-  end
+  let x = 3 in
+  let y = x + x in
+  (y * y) + x
 
 (*
    Here and elsewhere 'begin'-'end' are treated exactly the same as parentheses:
@@ -136,7 +133,7 @@ let z : int =
 let z : int =
   let x = 3 in
   let y = x + x in
-  begin y * y end + x
+  (y * y) + x
 
 (*
   Once bound by a 'let', binding between a variable (like 'z' above) and its
@@ -167,9 +164,7 @@ let double : int -> int = fun (x : int) -> x + x
   precedence:
 *)
 let doubled_z : int = double z (* call double on z  *)
-
 let quadrupled_z : int = double (double z) (* parens needed for grouping *)
-
 let sextupled_z : int = quadrupled_z + double z
 
 (*
@@ -187,9 +182,7 @@ let squared_z : int = mult z z (* multiply z times z *)
   partially applied: 
 *)
 let mult_by_3 : int -> int = mult 3 (* partially apply mult to 3 *)
-
 let mult_by_4 : int -> int = mult 4 (* partially apply mult to 4 *)
-
 let meaning_of_life : int = mult_by_3 14
 (* call the partially applied function *)
 
@@ -209,7 +202,6 @@ let mult (x : int) (y : int) : int = x * y
 
 (* We still call them in the same way as before: *)
 let quadrupled_z : int = double (double z) (* parens needed for grouping *)
-
 let mult_by_3 : int -> int = mult 3 (* partially apply mult to 3 *)
 
 (*
@@ -365,7 +357,7 @@ let cube : int -> int = fun x -> x * x * x
    (all numbers non-negative)
    and computes the total value of the coins in cents:
 *)
-let cents_of q d n p = 25 * q + 10 * d + 5 * n + 1 * p
+let cents_of q d n p = (25 * q) + (10 * d) + (5 * n) + (1 * p)
 
 (* Problem 1-3 *)
 (*
@@ -413,7 +405,7 @@ let prob3_case3 : int =
 let triple : int * bool * string = (3, true, "some string")
 
 (* NOTE: technically, the parentheses are _optional_, so we could have done: *)
-let triple : int * bool * string = 3, true, "some string"
+let triple : int * bool * string = (3, true, "some string")
 
 (* Tuples can nest *)
 let pair_of_triples : (int * bool * string) * (int * bool * string) =
@@ -489,7 +481,6 @@ let first_of_three (t : 'a * 'b * 'c) : 'a =
   match t with x, _, _ -> x
 
 let t1 : int = first_of_three triple (* binds t1 to 3 *)
-
 let second_of_three (t : 'a * 'b * 'c) : 'b = match t with _, x, _ -> x
 let t2 : bool = second_of_three triple (* binds t2 to true *)
 
@@ -519,7 +510,7 @@ let third_of_three ((_, _, z) : 'a * 'b * 'c) : 'c = z
 *)
 
 let compose_pair (p : ('b -> 'c) * ('a -> 'b)) : 'a -> 'c =
-  fun x -> x |> snd p |> fst p
+ fun x -> x |> snd p |> fst p
 
 (******************************************************************************)
 (*                                                                            *)
@@ -563,7 +554,6 @@ let is_empty (l : 'a list) : bool =
 (* non-nil case -- return false *)
 
 let ans1 : bool = is_empty [] (* evaluates to true *)
-
 let ans2 : bool = is_empty list1 (* evaluates to false *)
 
 (*
@@ -636,7 +626,6 @@ let rec is_sorted (l : 'a list) : bool =
   | h1 :: h2 :: tl -> h1 < h2 && is_sorted (h2 :: tl)
 
 let is_sorted_ans1 : bool = is_sorted [ 1; 2; 3 ] (* true *)
-
 let is_sorted_ans2 : bool = is_sorted [ 1; 3; 2 ] (* false *)
 
 (*
@@ -651,7 +640,6 @@ let rec map (f : 'a -> 'b) (l : 'a list) : 'b list =
   match l with [] -> [] | h :: tl -> f h :: map f tl
 
 let map_ans1 : int list = map double [ 1; 2; 3 ] (* evaluates to [2;4;6]  *)
-
 let map_ans2 : (int * int) list = map pair_up [ 1; 2; 3 ]
 (* evaluates to [(1,1);(2,2);(3,3)] *)
 
@@ -672,9 +660,7 @@ let rec mylist_to_list (l : 'a mylist) : 'a list =
   the inverse of the mylist_to_list function given above.
 *)
 let rec list_to_mylist (l : 'a list) : 'a mylist =
-  match l with
-  | [] -> Nil
-  | hd :: tl -> Cons (hd, list_to_mylist tl)
+  match l with [] -> Nil | hd :: tl -> Cons (hd, list_to_mylist tl)
 
 (*
   Problem 3-2
@@ -690,9 +676,7 @@ let rec list_to_mylist (l : 'a list) : 'a mylist =
   append.  So (List.append [1;2] [3]) is the same as  ([1;2] @ [3]).
 *)
 let rec append (l1 : 'a list) (l2 : 'a list) : 'a list =
-  match l1 with
-  | [] -> l2
-  | hd :: tl -> hd :: append tl l2
+  match l1 with [] -> l2 | hd :: tl -> hd :: append tl l2
 
 (*
   Problem 3-3
@@ -701,9 +685,7 @@ let rec append (l1 : 'a list) (l2 : 'a list) : 'a list =
   you might want to call append.  Do not use the library function.
 *)
 let rec rev (l : 'a list) : 'a list =
-  match l with
-  | [] -> []
-  | hd :: tl -> append (rev tl) [hd]
+  match l with [] -> [] | hd :: tl -> append (rev tl) [ hd ]
 
 (*
   Problem 3-4
@@ -716,10 +698,10 @@ let rec rev (l : 'a list) : 'a list =
 *)
 let rev_t (l : 'a list) : 'a list =
   let rec rev_aux acc = function
-  | [] -> acc
-  | hd :: tl -> rev_aux (hd :: acc) tl in begin
-    rev_aux [] l
-  end
+    | [] -> acc
+    | hd :: tl -> rev_aux (hd :: acc) tl
+  in
+  rev_aux [] l
 
 (*
   Problem 3-5
@@ -736,8 +718,9 @@ let rev_t (l : 'a list) : 'a list =
 *)
 let rec insert (x : 'a) (l : 'a list) : 'a list =
   match l with
-  | [] -> [x]
-  | hd :: tl -> if x == hd then l else if x > hd then hd :: (insert x tl) else x :: l
+  | [] -> [ x ]
+  | hd :: tl ->
+      if x == hd then l else if x > hd then hd :: insert x tl else x :: l
 
 (*
   Problem 3-6
@@ -747,10 +730,8 @@ let rec insert (x : 'a) (l : 'a list) : 'a list =
   Hint: you might want to use the insert function that you just defined.
 *)
 let rec union (l1 : 'a list) (l2 : 'a list) : 'a list =
-  match l1 with
-  | [] -> l2 
-  | hd :: tl -> union tl (insert hd l2)
- 
+  match l1 with [] -> l2 | hd :: tl -> union tl (insert hd l2)
+
 (******************************************************************************)
 (*                                                                            *)
 (* PART 3: Expression Trees and Interpreters                                  *)
@@ -836,10 +817,10 @@ let e3 : exp = Mult (Var "y", Mult (e2, Neg e2)) (* "y * ((x+1) * -(x+1))" *)
 *)
 
 let rec vars_of = function
-| Const i -> []
-| Var s -> [s]
-| Neg e -> vars_of e
-| Add (e1, e2) | Mult (e1, e2) -> union (vars_of e1) (vars_of e2)
+  | Const i -> []
+  | Var s -> [ s ]
+  | Neg e -> vars_of e
+  | Add (e1, e2) | Mult (e1, e2) -> union (vars_of e1) (vars_of e2)
 
 (*
   How should we _interpret_ (i.e. give meaning to) an expression?
@@ -864,7 +845,6 @@ type ctxt = (string * int64) list
 
 (* Here are some example evalution contexts: *)
 let ctxt1 : ctxt = [ ("x", 3L) ] (* maps "x" to 3L *)
-
 let ctxt2 : ctxt = [ ("x", 2L); ("y", 7L) ] (* maps "x" to 2L, "y" to 7L *)
 
 (*
@@ -928,7 +908,7 @@ let rec lookup (x : string) (c : ctxt) : int64 =
    You should test your interpeter on more examples than just those provided in
    gradedtests.ml.
 *)
-let rec interpret (c : ctxt) (e : exp) : int64 = 
+let rec interpret (c : ctxt) (e : exp) : int64 =
   match e with
   | Const i -> i
   | Var s -> lookup s c
@@ -979,18 +959,20 @@ let rec interpret (c : ctxt) (e : exp) : int64 =
 *)
 
 let optimize e =
-  let rec optimize_aux ?r:(r=true) e : exp =
+  let rec optimize_aux ?(r = true) e : exp =
     match e with
     | Neg (Const i) -> Const (Int64.neg i)
     | Neg (Neg e) -> e |> optimize_aux
-    | Neg (e) when r -> Neg (optimize_aux e) |> optimize_aux ~r:false
+    | Neg e when r -> Neg (optimize_aux e) |> optimize_aux ~r:false
     | Add (Const i1, Const i2) -> Const (Int64.add i1 i2)
     | Add (e, Const 0L) | Add (Const 0L, e) -> e |> optimize_aux
-    | Add (e1, e2) when r -> Add (optimize_aux e1, optimize_aux e2) |> optimize_aux ~r:false
+    | Add (e1, e2) when r ->
+        Add (optimize_aux e1, optimize_aux e2) |> optimize_aux ~r:false
     | Mult (Const i1, Const i2) -> Const (Int64.mul i1 i2)
     | Mult (_, Const 0L) | Mult (Const 0L, _) -> Const 0L
     | Mult (e, Const 1L) | Mult (Const 1L, e) -> e |> optimize_aux
-    | Mult (e1, e2) when r -> Mult (optimize_aux e1, optimize_aux e2) |> optimize_aux ~r:false
+    | Mult (e1, e2) when r ->
+        Mult (optimize_aux e1, optimize_aux e2) |> optimize_aux ~r:false
     | _ -> e
   in
   optimize_aux e
@@ -1132,12 +1114,11 @@ let ans1 = run [] p1
 *)
 let rec compile (e : exp) : program =
   match e with
-  | Const i -> [IPushC i]
-  | Var s -> [IPushV s]
-  | Add (e1, e2) -> (compile e2) @ (compile e1) @ [IAdd]
-  | Mult (e1, e2) -> (compile e2) @ (compile e1) @ [IMul]
-  | Neg e -> (compile e) @ [INeg]
-
+  | Const i -> [ IPushC i ]
+  | Var s -> [ IPushV s ]
+  | Add (e1, e2) -> compile e2 @ compile e1 @ [ IAdd ]
+  | Mult (e1, e2) -> compile e2 @ compile e1 @ [ IMul ]
+  | Neg e -> compile e @ [ INeg ]
 
 (************)
 (* Epilogue *)
