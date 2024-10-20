@@ -38,7 +38,7 @@ let student_tests : suite =
               (-5L) );
         ] );
     Test
-      ( "Student-Provided Tests For Problem 4-5",
+      ( "Student-Provided Tests For Problem 5",
         [
           ( "case1",
             assert_eqf
